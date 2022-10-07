@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis
+    networks:
+      - deploy_network
+  
+  web:
+    build: ./
+    command: uvicorn app.main:app --reload --workers 1 --host 0.0.0.0 --port 8000
+    volumes:
+      - ./code/:/usr/code/app/
+    ports:
+      - 8002:8000
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    networks:
+      - deploy_network
+    depends_on:
+      - redis
+  
+networks:
+    deploy_network:
